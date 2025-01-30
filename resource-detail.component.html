@@ -1,0 +1,117 @@
+
+<div class="app-page">
+<app-breadcrumb *ngIf="breadcrumb" [current]="breadcrumb.current">
+</app-breadcrumb>
+ 
+ <!--  <div class="edition-actions" *ngIf="resource">
+    <a
+      class="btnModif ign-btn primary"
+      [routerLink]="['/', 'catalogue', 'edit', resource.id]"
+    >
+      Modifier la ressource
+    </a>
+   
+    <a class="btnSupp ign-btn primary" (click)="showConfirmDialog()">
+      Supprimer la ressource
+    </a>
+  </div> -->
+  
+<div *ngIf="resource; else missingResource" class="resource-content">
+ 
+  <code>{{resource |json}}</code>
+
+  <div class="header">
+    <div class="img-wrapper">
+      <img
+        *ngIf="resource.img; else defautImg"
+        [src]="resource.img"
+        alt="Preview"
+      />
+    </div>
+    <ng-template #defautImg>
+      <div class="img-wrapper">
+        <img src="assets/img/no-img.png" alt="Preview" />
+      </div>
+    </ng-template>
+    <div class="titles-infos">
+      <div>
+        <div>
+        <span class="ign-tag primary" >{{ transformType(resource.type) }}</span>
+       <span *ngIf="resource.sous_type && resource.sous_type!== 'Inconnu'">{{resource.sous_type}}</span>
+        <span *ngIf="resource.millesime">{{ resource.millesime ||'non renseigné'}}</span>
+      </div>
+      </div>
+      <h1>{{ resource.name ||'non renseigné' }}</h1>
+      <p>{{ resource.territoire ||'non renseigné' }}</p>
+      <div class="button-wrapper actions-toolbar">
+      <ng-container *ngIf="resource.type === 'map'">
+        <a
+          class="ign-btn primary"
+          [routerLink]="['/', 'carte', resource.id]"        
+        >        
+          Voir la carte
+        </a>
+      </ng-container>
+
+    
+
+    <ng-container *ngIf="resource.externalLink || resource.gpf_path "> 
+        <a
+          class="ign-btn primary"
+          [href]="resource.externalLink || resource.gpf_path"
+          target="_blank"
+        >
+          Télécharger 
+    </a>
+       </ng-container> 
+      <div  class="ign-download download-name show-raw" (click)="showRawObjectDialog()">
+        Voir toutes les propriétés
+      </div>
+
+      
+      </div>
+    <p>Langue : {{resource.langue || "Français"}} | {{resource.licence ||'non renseigné'}}</p>
+      <p>Par {{resource.owner ||'non renseigné'}}, {{resource.coproducers.join(', ')}}</p>
+      <p>Contact: {{resource.contact ||'non renseigné'}}</p>
+      <p>Publié le {{resource.uploadDate| date }} | Fréquence de mise à jour:  {{resource.frequenceMaj ||'non renseigné'}}</p>
+    </div>
+  </div>
+  <div class="tag-list">
+    <span *ngFor="let keyword of resource.keywords" class="grey ign-tag">{{keyword ||'non renseigné'}}</span>
+  </div>
+  <div class="detail-content">
+    <h3 class="black">Enseignement</h3>
+    <p class="text-content">{{resource.purpose ||'non renseigné'}}</p>
+    <h3 class="black">Cas d'usage</h3>
+    <p class="text-content">{{resource.useCase ||'non renseigné'}}</p>
+    <h3 class="black">Explication des données</h3>
+    <p class="text-content" [innerHTML]="resource.description"></p>
+   
+    <h3 class="black">Lien vers la métadonnée</h3>   
+    <a *ngIf="resource.gpf_url_metadata; else allRecords" class="ign-download download-name" [href]="urlSafe">Fichier de description</a>
+    <ng-template #allRecords>
+      <a class="ign-download download-name" [href]="alternateSafe">Fichier de description</a>
+      </ng-template>
+  </div>
+  <div class="connexes">
+    <h3 class="black">Autres ressources similaires</h3>
+    <ng-container *ngIf="resource.resourcesConnexes && resource.resourcesConnexes > 0; else noResult">
+      <div class="list-flex">
+        <app-catalogue-item
+          *ngFor="let item of resource.resourcesConnexes"
+          class="list-item"
+          [resource]="item"
+        ></app-catalogue-item>
+      </div>
+    </ng-container>
+  </div>
+</div>
+</div>
+
+<ng-template #missingResource>
+  <p>Oups ! La ressource est introuvable</p>
+</ng-template>
+<ng-template #noResult>
+  <p class="noResult list-flex">Aucune ressource trouvée.</p>
+</ng-template>
+
